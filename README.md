@@ -4,6 +4,14 @@ A simulation of gravitationally bound particles with an interactable graphical u
 # Screenshot
 ![User interface](/images/user_interface.png "User interface")
 
+# Controls
+* `LEFT MOUSE BUTTON` - hold and drag the cursor around to move the camera
+* `RIGHT MOUSE BUTTON` - spawn a new particle at the location of the cursor
+* `SCROLL WHEEL` - zoom in/out on the position of the cursor
+* `LEFT SHIFT` - hold to increase zoom in/out speed
+* `W` `A` `S` `D` - move the camera using the keyboard
+* `ESC` - exit the application
+
 # Repository structure
 * `/` - main components of the application like the viewport or input handling
 * `/calculators/` - methods for calculating forces applying on simulation particles, currently just the O(n^2) strategy of comparing all particle pairs is implemented
