@@ -9,7 +9,7 @@ A simulation of gravitationally bound particles with an interactable graphical u
 * `RIGHT MOUSE BUTTON` - spawn a new particle at the location of the cursor
 * `SCROLL WHEEL` - zoom in/out on the position of the cursor
 * `LEFT SHIFT` - hold to increase zoom in/out speed
-* `W` `A` `S` `D` - move the camera using the keyboard
+* `W` `A` `S` `D` or `↑` `←` `↓` `→` - move the camera using the keyboard
 * `ESC` - exit the application
 
 # Repository structure
