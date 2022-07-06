@@ -79,15 +79,19 @@ class Controller:
     def scroll_with_keys(self, camera):
         pressed_keys = pygame.key.get_pressed()
 
+        scroll_amount = KEYS_SCROLL_AMOUNT
+        if pressed_keys[pygame.K_LSHIFT]:
+            scroll_amount *= 2
+
         if pressed_keys[pygame.K_w] or pressed_keys[pygame.K_UP]:
-            camera.position[1] -= KEYS_SCROLL_AMOUNT * \
+            camera.position[1] -= scroll_amount * \
                 (1.0 / camera.zoom_factor)
         if pressed_keys[pygame.K_s] or pressed_keys[pygame.K_DOWN]:
-            camera.position[1] += KEYS_SCROLL_AMOUNT * \
+            camera.position[1] += scroll_amount * \
                 (1.0 / camera.zoom_factor)
         if pressed_keys[pygame.K_a] or pressed_keys[pygame.K_LEFT]:
-            camera.position[0] -= KEYS_SCROLL_AMOUNT * \
+            camera.position[0] -= scroll_amount * \
                 (1.0 / camera.zoom_factor)
         if pressed_keys[pygame.K_d] or pressed_keys[pygame.K_RIGHT]:
-            camera.position[0] += KEYS_SCROLL_AMOUNT * \
+            camera.position[0] += scroll_amount * \
                 (1.0 / camera.zoom_factor)
