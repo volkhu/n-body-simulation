@@ -70,7 +70,7 @@ class Controller:
         velocity = [0, 0]
         mass = 10
 
-        simulation.particles.append(Particle(position, velocity, mass))
+        simulation.add_particle(Particle(position, velocity, mass))
 
     def scroll_with_mouse(self, camera, movement_offset):
         camera.position = [camera.position[0] - movement_offset[0] * (1.0 / camera.zoom_factor),

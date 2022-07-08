@@ -16,7 +16,7 @@ class AllPairs:
     def get_acceleration(self, particle, particles):
         acceleration_sum = [0, 0]
 
-        for other in particles:
+        for other in particles.values():
             if particle == other:
                 continue
 

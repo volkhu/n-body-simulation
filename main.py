@@ -24,8 +24,8 @@ def main():
 
     # create simulation with 2 test particles orbiting each other
     simulation = Simulation()
-    simulation.particles.append(Particle([0, 0], [0, 0], 100))
-    simulation.particles.append(Particle([-200, 0], [0, -2.3], 10))
+    simulation.add_particle(Particle([0, 0], [0, 0], 100))
+    simulation.add_particle(Particle([-200, 0], [0, -2.3], 10))
 
     # set up a simulation solver
     force_calculator = AllPairs(GRAVITATIONAL_CONSTANT)
@@ -35,7 +35,7 @@ def main():
     clock = pygame.time.Clock()
     while not controller.exit_requested:
         controller.handle_input(camera, simulation)
-        integrator.integrate(simulation, SIMULATION_TIMESTEP)
+        simulation.advance(integrator, SIMULATION_TIMESTEP)
         display.render(simulation, camera)
 
         # wait for the next frame

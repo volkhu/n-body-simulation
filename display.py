@@ -15,7 +15,7 @@ class Display:
         # clear the screen first with a background color
         self.screen.fill((32, 32, 32))
 
-        for particle in simulation.particles:
+        for particle_id, particle in simulation.get_current_timestep_particles().items():
             self.draw_particle(particle, camera)
 
         pygame.display.update()
