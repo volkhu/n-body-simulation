@@ -6,19 +6,21 @@ from pygame import gfxdraw
 BACKGROUND_COLOR = (32, 32, 32)
 PARTICLE_COLOR = (255, 255, 0)
 PARTICLE_TRAIL_COLOR = (64, 64, 64)
+PARTICLE_TRAIL_WIDTH = 3
 
 
 class Display:
     def __init__(self, width, height):
         pygame.init()
         self.screen = pygame.display.set_mode((width, height))
+        self.surface = pygame.Surface((width, height))
 
         self.screen_width = width
         self.screen_height = height
 
     def render(self, simulation, camera):
-        # clear the screen first with a background color
-        self.screen.fill(BACKGROUND_COLOR)
+        # clear the render surface first with a background color
+        self.surface.fill(BACKGROUND_COLOR)
 
         # draw particles and their associated effects
         particles = simulation.get_current_timestep_particles()
@@ -30,6 +32,8 @@ class Display:
         for particle in particles.values():
             self.draw_particle(particle, camera)
 
+        # copy render surface to the screen and update it
+        self.screen.blit(self.surface, (0, 0))
         pygame.display.update()
 
     def draw_particle(self, particle, camera):
@@ -43,12 +47,12 @@ class Display:
         elif position_on_screen[1] + radius < 0 or position_on_screen[1] - radius > self.screen_height:
             return  # out of vertical boundaries
 
-        self.draw_circle(PARTICLE_COLOR, position_on_screen, radius)
+        self.draw_circle(position_on_screen, radius, PARTICLE_COLOR)
 
-    def draw_circle(self, color, position, radius):
-        gfxdraw.aacircle(self.screen, int(position[0]), int(
+    def draw_circle(self, position, radius, color):
+        gfxdraw.aacircle(self.surface, int(position[0]), int(
             position[1]), int(radius), color)
-        gfxdraw.filled_circle(self.screen, int(
+        gfxdraw.filled_circle(self.surface, int(
             position[0]), int(position[1]), int(radius), color)
 
     def draw_particle_trail(self, particle_id, particles_history, camera):
@@ -63,10 +67,13 @@ class Display:
                 particle.position, camera)
 
             if future_screen_position:
-                pygame.draw.line(self.screen, PARTICLE_TRAIL_COLOR,
-                                 particle_screen_position, future_screen_position, 3)
+                self.draw_line(particle_screen_position,
+                               future_screen_position, PARTICLE_TRAIL_WIDTH, PARTICLE_TRAIL_COLOR)
 
             future_screen_position = particle_screen_position
+
+    def draw_line(self, beginning, end, width, color):
+        pygame.draw.line(self.surface, color, beginning, end, width)
 
     def get_position_on_screen(self, world_position, camera):
         position_offset = [world_position[0] - camera.position[0],
