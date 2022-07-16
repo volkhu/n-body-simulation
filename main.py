@@ -18,7 +18,7 @@ GRAVITATIONAL_CONSTANT = 10
 
 def main():
     # create a viewport, camera and user input controller
-    display = Display(WINDOW_WIDTH, WINDOW_HEIGHT)
+    display = Display((WINDOW_WIDTH, WINDOW_HEIGHT))
     camera = Camera(display.get_default_camera_position())
     controller = Controller()
 
