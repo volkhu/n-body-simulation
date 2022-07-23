@@ -25,7 +25,7 @@ class Controller:
             elif event.type == pygame.MOUSEMOTION:
                 if event.buttons[0]:  # left mouse button down
                     # keep dragging the camera
-                    self.scroll_with_mouse(camera, event.rel)
+                    self.drag_with_mouse(display, camera, event.rel)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left mouse button up
                 # stop dragging the camera
                 pygame.mouse.set_visible(True)
@@ -36,11 +36,13 @@ class Controller:
             elif event.type == pygame.KEYDOWN:
                 self.on_key_pressed(event.key, display)
 
-        self.scroll_with_keys(camera)
+        self.drag_with_keys(display, camera)
     
     def on_key_pressed(self, key, display):
         if key == pygame.K_g:
             display.set_ssaa_enabled(not display.get_ssaa_enabled())
+        elif key == pygame.K_c:
+            display.track_center_of_mass = not display.track_center_of_mass
     
     def zoom_around_cursor(self, camera, cursor_position, zoom_amount):
         # calculate the world position that the cursor is on the current frame
@@ -78,17 +80,19 @@ class Controller:
 
         simulation.add_particle(Particle(position, velocity, mass))
 
-    def scroll_with_mouse(self, camera, movement_offset):
+    def drag_with_mouse(self, display, camera, movement_offset):
         camera.position = [camera.position[0] - movement_offset[0] * (1.0 / camera.zoom_factor),
                            camera.position[1] - movement_offset[1] * (1.0 / camera.zoom_factor)]
+        display.track_center_of_mass = False
 
-    def scroll_with_keys(self, camera):
+    def drag_with_keys(self, display, camera):
         pressed_keys = pygame.key.get_pressed()
 
         scroll_amount = KEYS_SCROLL_AMOUNT
         if pressed_keys[pygame.K_LSHIFT]:
             scroll_amount *= 2
-
+        
+        old_camera_position = camera.position.copy()
         if pressed_keys[pygame.K_w] or pressed_keys[pygame.K_UP]:
             camera.position[1] -= scroll_amount * \
                 (1.0 / camera.zoom_factor)
@@ -101,3 +105,7 @@ class Controller:
         if pressed_keys[pygame.K_d] or pressed_keys[pygame.K_RIGHT]:
             camera.position[0] += scroll_amount * \
                 (1.0 / camera.zoom_factor)
+        
+        # disengage CoM tracking if user moved the camera
+        if camera.position != old_camera_position:
+            display.track_center_of_mass = False
