@@ -34,7 +34,7 @@ def main():
     # main loop
     clock = pygame.time.Clock()
     while not controller.exit_requested:
-        controller.handle_input(camera, simulation)
+        controller.handle_input(display, camera, simulation)
         simulation.advance(integrator, SIMULATION_TIMESTEP)
         display.render(simulation, camera)
 

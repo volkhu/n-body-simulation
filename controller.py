@@ -8,7 +8,7 @@ class Controller:
     def __init__(self):
         self.exit_requested = False
 
-    def handle_input(self, camera, simulation):
+    def handle_input(self, display, camera, simulation):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEWHEEL:
                 wheel_movement = event.y
@@ -33,9 +33,15 @@ class Controller:
             elif event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 # change the value to True to exit the main loop
                 self.exit_requested = True
+            elif event.type == pygame.KEYDOWN:
+                self.on_key_pressed(event.key, display)
 
         self.scroll_with_keys(camera)
-
+    
+    def on_key_pressed(self, key, display):
+        if key == pygame.K_g:
+            display.set_ssaa_enabled(not display.get_ssaa_enabled())
+    
     def zoom_around_cursor(self, camera, cursor_position, zoom_amount):
         # calculate the world position that the cursor is on the current frame
         world_relative_position = [

@@ -14,11 +14,17 @@ class Display:
     def __init__(self, screen_size):
         pygame.init()
         self.screen = pygame.display.set_mode(screen_size)
-
-        surface_size = (screen_size[0] * SSAA_FACTOR,
-                        screen_size[1] * SSAA_FACTOR)
+        self.set_ssaa_enabled(False)
+    
+    def set_ssaa_enabled(self, enabled):
+        self.ssaa_factor = SSAA_FACTOR if enabled else 1.0
+        screen_size = self.screen.get_size()
+        surface_size = (screen_size[0] * self.ssaa_factor, screen_size[1] * self.ssaa_factor)
         self.surface = pygame.Surface(surface_size)
-
+    
+    def get_ssaa_enabled(self):
+        return self.ssaa_factor > 1.0
+    
     def render(self, simulation, camera):
         # clear the render surface first with a background color
         self.surface.fill(BACKGROUND_COLOR)
@@ -43,13 +49,6 @@ class Display:
         position_on_screen = self.get_position_on_screen(
             particle.position, camera)
 
-        # cull particles outside the view for both performance and screen coordinate overflow reasons
-        screen_size = self.surface.get_size()
-        if position_on_screen[0] + radius < 0 or position_on_screen[0] - radius > screen_size[0]:
-            return  # out of horizontal boundaries
-        elif position_on_screen[1] + radius < 0 or position_on_screen[1] - radius > screen_size[1]:
-            return  # out of vertical boundaries
-
         self.draw_circle(position_on_screen, radius, PARTICLE_COLOR)
 
     def draw_particle_trail(self, particle_id, particles_history, camera):
@@ -70,15 +69,17 @@ class Display:
             future_screen_position = particle_screen_position
 
     def draw_circle(self, position, radius, color):
-        draw_position = self.get_position_on_render_surface(position)
-        pygame.draw.circle(self.surface, color,
-                           draw_position, radius * SSAA_FACTOR)
+        if self.is_circle_on_screen(position, radius):
+            draw_position = self.get_position_on_render_surface(position)
+            pygame.draw.circle(self.surface, color,
+                               draw_position, radius * self.ssaa_factor)
 
     def draw_line(self, beginning, end, width, color):
-        draw_beginning = self.get_position_on_render_surface(beginning)
-        draw_end = self.get_position_on_render_surface(end)
-        pygame.draw.line(self.surface, color, draw_beginning,
-                         draw_end, int(width * SSAA_FACTOR))
+        if self.is_point_on_screen(beginning) or self.is_point_on_screen(end):
+            draw_beginning = self.get_position_on_render_surface(beginning)
+            draw_end = self.get_position_on_render_surface(end)
+            pygame.draw.line(self.surface, color, draw_beginning,
+                             draw_end, int(width * self.ssaa_factor))
 
     def get_position_on_screen(self, world_position, camera):
         position_offset = [world_position[0] - camera.position[0],
@@ -86,8 +87,27 @@ class Display:
         return [position_offset[0] * camera.zoom_factor, position_offset[1] * camera.zoom_factor]
 
     def get_position_on_render_surface(self, screen_position):
-        return [int(screen_position[0] * SSAA_FACTOR), int(screen_position[1] * SSAA_FACTOR)]
-
+        return [int(screen_position[0] * self.ssaa_factor), int(screen_position[1] * self.ssaa_factor)]
+    
+    def is_point_on_screen(self, point):
+        screen_size = self.screen.get_size()
+        
+        if point[0] < 0 or point[0] > screen_size[0]:
+            return False # out of horizontal boundaries
+        if point[1] < 0 or point[1] > screen_size[1]:
+            return False # out of vertical boundaries
+        
+        return True
+    
+    def is_circle_on_screen(self, position, radius):
+        screen_size = self.screen.get_size()
+        if position[0] + radius < 0 or position[0] - radius > screen_size[0]:
+            return False # out of horizontal boundaries
+        elif position[1] + radius < 0 or position[1] - radius > screen_size[1]:
+            return False # out of vertical boundaries
+        
+        return True
+    
     def get_default_camera_position(self):
         # since the top left corner of the window is the (0, 0) coordinate point,
         # offset the default camera position by half the window size in the opposite

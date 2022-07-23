@@ -10,6 +10,7 @@ A simulation of gravitationally bound particles with an interactable graphical u
 * `SCROLL WHEEL` - zoom in/out on the position of the cursor
 * `LEFT SHIFT` - hold to increase camera movement and zoom speed
 * `W` `A` `S` `D` or `↑` `←` `↓` `→` - move the camera using the keyboard
+* `G` - toggle anti-aliasing (can reduce performance)
 * `ESC` - exit the application
 
 # Repository structure
